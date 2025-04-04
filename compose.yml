@@ -1,0 +1,12 @@
+services:
+  telefonzentrale:
+    image: hucki/telefonzentrale-arm
+    build:
+      context: .
+      args:
+        VITE_BASE_URL: https://api.sipgate.com/v2
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
