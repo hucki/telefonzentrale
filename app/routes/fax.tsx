@@ -6,8 +6,6 @@ import {
 } from "react-router";
 import type { Route } from "./+types/fax";
 import { useDropzone } from "react-dropzone";
-
-// import { ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { createPdf } from "../utils/pdf";
 import type { Contact, FaxContact } from "../types/contacts";
 import type { FaxHistoryResult } from "../types/history";
@@ -139,7 +137,7 @@ export const loader = async (): Promise<LoaderResult> => {
       direction: "INCOMING",
       archived: false,
     });
-    const faxIncomingOutgoingResult = await fetchHistoryWrapper({
+    const faxOutgoingHistoryResult = await fetchHistoryWrapper({
       type: "FAX",
       direction: "OUTGOING",
       archived: false,
@@ -147,10 +145,9 @@ export const loader = async (): Promise<LoaderResult> => {
     if (faxIncomingHistoryResult?.items.length) {
       faxHistory.push(...faxIncomingHistoryResult.items);
     }
-    if (faxIncomingOutgoingResult?.items.length) {
-      faxHistory.push(...faxIncomingOutgoingResult.items);
+    if (faxOutgoingHistoryResult?.items.length) {
+      faxHistory.push(...faxOutgoingHistoryResult.items);
     }
-    console.log({ out: faxIncomingOutgoingResult.items });
   } catch (error) {
     console.error(error);
     fetchError = true;
