@@ -5,7 +5,7 @@ interface HistoryViewProps {
   callsIncoming: { items: HistoryItem[] };
   callsMissed: { items: HistoryItem[] };
   callsOutgoing: { items: HistoryItem[] };
-  voicemails: { items: HistoryItem[] };
+  voicemails?: { items: HistoryItem[] };
   isArchive?: boolean;
 }
 export const HistoryView = ({
@@ -17,13 +17,15 @@ export const HistoryView = ({
 }: HistoryViewProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-2 h-full p-2 overflow-y-auto">
-      <HistoryItemListContainer
-        items={voicemails.items}
-        isArchive={isArchive}
-        type="VOICEMAIL"
-        direction="INCOMING"
-        className="md:row-span-2"
-      />
+      {voicemails && (
+        <HistoryItemListContainer
+          items={voicemails.items}
+          isArchive={isArchive}
+          type="VOICEMAIL"
+          direction="INCOMING"
+          className="md:row-span-2"
+        />
+      )}
       <HistoryItemListContainer
         items={callsMissed.items}
         isArchive={isArchive}
