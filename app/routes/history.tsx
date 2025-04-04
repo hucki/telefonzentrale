@@ -5,7 +5,7 @@ import { HistoryView } from "../history/HistoryView";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "History" },
+    { title: "Anrufliste" },
     { name: "description", content: "Telefonzentrale Anrufliste" },
   ];
 }
@@ -26,18 +26,12 @@ export const loader = async () => {
     direction: "OUTGOING",
     archived: false,
   });
-  const voicemails = await fetchHistoryWrapper({
-    type: "VOICEMAIL",
-    direction: "INCOMING",
-    archived: false,
-  });
 
   // Use json helper to return properly formatted response for Remix
   return {
     callsIncoming,
     callsOutgoing,
     callsMissed,
-    voicemails,
   };
 };
 
@@ -50,7 +44,6 @@ export default function History() {
           callsIncoming={data.callsIncoming}
           callsMissed={data.callsMissed}
           callsOutgoing={data.callsOutgoing}
-          voicemails={data.voicemails}
           isArchive={false}
         />
       </div>
