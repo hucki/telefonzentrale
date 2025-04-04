@@ -1,3 +1,4 @@
+import { sortDescending } from "../utils/sortItems";
 import type { HistoryItem } from "../types/history";
 import HistoryItemListContainer from "./HistoryItemListContainer";
 
@@ -19,7 +20,7 @@ export const HistoryView = ({
     <div className="grid grid-cols-1 md:grid-cols-3 gap-2 h-full p-2 overflow-y-auto">
       {voicemails && (
         <HistoryItemListContainer
-          items={voicemails.items}
+          items={voicemails.items.sort(sortDescending)}
           isArchive={isArchive}
           type="VOICEMAIL"
           direction="INCOMING"
@@ -27,20 +28,20 @@ export const HistoryView = ({
         />
       )}
       <HistoryItemListContainer
-        items={callsMissed.items}
+        items={callsMissed.items.sort(sortDescending)}
         isArchive={isArchive}
         type="CALL"
         direction="MISSED_INCOMING"
         className="md:row-span-2"
       />
       <HistoryItemListContainer
-        items={callsIncoming.items}
+        items={callsIncoming.items.sort(sortDescending)}
         isArchive={isArchive}
         type="CALL"
         direction="INCOMING"
       />
       <HistoryItemListContainer
-        items={callsOutgoing.items}
+        items={callsOutgoing.items.sort(sortDescending)}
         isArchive={isArchive}
         type="CALL"
         direction="OUTGOING"

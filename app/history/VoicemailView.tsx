@@ -1,3 +1,4 @@
+import { sortDescending } from "../utils/sortItems";
 import type { HistoryItem } from "../types/history";
 import HistoryItemListContainer from "./HistoryItemListContainer";
 
@@ -12,7 +13,7 @@ export const VoicemailView = ({
   return (
     <div className="grid grid-cols-1 h-full w-full p-2 overflow-y-auto">
       <HistoryItemListContainer
-        items={voicemails.items}
+        items={voicemails.items.sort(sortDescending)}
         isArchive={isArchive}
         type="VOICEMAIL"
         direction="INCOMING"
