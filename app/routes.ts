@@ -13,4 +13,5 @@ export default [
     route("archive", "routes/archive.tsx"),
     route("fax", "routes/fax.tsx"),
   ]),
+  route("api/history-update", "routes/api/history-update.ts"),
 ] satisfies RouteConfig;
