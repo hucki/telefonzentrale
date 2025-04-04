@@ -39,6 +39,7 @@ export const fetchHistoryWrapper = async ({
   const fetchHeaders = new Headers();
   fetchHeaders.append("Accept", "application/json");
   fetchHeaders.append("Content-Type", "application/json");
+  fetchHeaders.append("Cache-Control", "max-age=5, stale-while-revalidate=10");
   fetchHeaders.append("Authorization", `Basic ${btoa(`${tokenId}:${token}`)}`);
 
   return fetch(url.toString(), {
