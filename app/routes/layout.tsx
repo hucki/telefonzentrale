@@ -6,7 +6,7 @@ export default function Layout() {
   const isNavigating = Boolean(navigation.location);
   return (
     <div className="flex flex-row h-screen">
-      <aside className="flex flex-col w-32 md:w-40 bg-slate-300 dark:bg-slate-800">
+      <aside className="flex flex-col w-16 md:w-40 bg-slate-300 dark:bg-slate-800">
         <Navigation />
       </aside>
       <main className="w-full">

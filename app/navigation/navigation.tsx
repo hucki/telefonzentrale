@@ -2,6 +2,7 @@ import {
   ArchiveBoxIcon,
   DocumentIcon,
   PhoneIcon,
+  SpeakerWaveIcon,
 } from "@heroicons/react/16/solid";
 import { Link } from "./link";
 import { Logo } from "../components/logo";
@@ -17,16 +18,20 @@ export const Navigation = () => {
           Menu
         </span>
         <Link to="/fax">
-          <DocumentIcon className="h-6 w-6 text-blue-500 dark:text-blue-700" />{" "}
-          Fax
+          <DocumentIcon className="h-6 w-6 text-blue-500 dark:text-blue-300" />{" "}
+          <span className="hidden md:block">Fax</span>
+        </Link>
+        <Link to="/voicemail">
+          <SpeakerWaveIcon className="h-6 w-6 text-blue-500 dark:text-blue-300" />{" "}
+          <span className="hidden md:block">Voicemail</span>
         </Link>
         <Link to="/history">
-          <PhoneIcon className="h-6 w-6 text-blue-500 dark:text-blue-700" />{" "}
-          Anrufliste
+          <PhoneIcon className="h-6 w-6 text-blue-500 dark:text-blue-300" />{" "}
+          <span className="hidden md:block">Anrufliste</span>
         </Link>
         <Link to="/archive">
-          <ArchiveBoxIcon className="h-6 w-6 text-blue-500 dark:text-blue-700" />{" "}
-          Archiv
+          <ArchiveBoxIcon className="h-6 w-6 text-blue-500 dark:text-blue-300" />{" "}
+          <span className="hidden md:block">Archiv</span>
         </Link>
       </div>
     </div>
