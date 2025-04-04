@@ -58,8 +58,10 @@ export default function HistoryItemListContainer({
   return (
     <div
       className={`p-4 ${
-        isArchive ? "bg-yellow-100 dark:bg-amber-900" : undefined
-      }  grid gap-2 auto-rows-max max-h-full overflow-y-auto border-1 border-gray-400 rounded-md shadow-md bg-white dark:bg-gray-800 ${className}`}
+        isArchive
+          ? "bg-yellow-100 dark:bg-yellow-700"
+          : "bg-white dark:bg-gray-800"
+      }  grid gap-2 auto-rows-max max-h-full overflow-y-auto border-1 border-gray-400 rounded-md shadow-md ${className}`}
     >
       <h2 className="text-xl font-bold flex items-center gap-2">
         {typeIcon}
