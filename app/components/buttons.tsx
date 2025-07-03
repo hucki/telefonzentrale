@@ -140,17 +140,29 @@ type SimpleButtonProps = {
   label: string;
   pending?: boolean;
   className?: string;
+  size?: "sm" | "md" | "lg" | "xs";
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
+
 export const SimpleButton = ({
   label,
   className,
   pending = false,
+  size = "md",
   ...props
 }: SimpleButtonProps) => {
+  const sizeClasses = {
+    xs: "px-2 py-1 text-xs",
+    sm: "px-2 py-1 text-sm",
+    md: "px-4 py-2",
+    lg: "px-6 py-3 text-lg",
+  };
+
   return (
     <button
       disabled={pending}
-      className={`px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors ${className} ${
+      className={`${
+        sizeClasses[size]
+      } bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors ${className} ${
         pending ? "opacity-50 cursor-not-allowed" : ""
       }`}
       {...props}
