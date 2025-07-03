@@ -16,7 +16,7 @@ export default function FaxHistoryView() {
     <div className=" p-4 flex flex-col h-full overflow-hidden rounded-md shadow-md border-1 border-gray-400  bg-white dark:bg-gray-800">
       <div className="h-1/2 overflow-hidden flex flex-col">
         <h2 className="text-xl font-bold">Fax Ausgang</h2>
-        <div className="h-full overflow-y-auto text-xs shadow-inner bg-gray-50 rounded-md">
+        <div className="h-full overflow-y-auto text-xs shadow-inner bg-gray-50 rounded-md border-1 border-gray-400">
           <FaxHistoryItemList
             items={historyItems.filter((item) => item.direction === "OUTGOING")}
           />
@@ -24,7 +24,7 @@ export default function FaxHistoryView() {
       </div>
       <div className="h-1/2 overflow-hidden flex flex-col">
         <h2 className="text-xl font-bold mt-4">Fax Eingang</h2>
-        <div className="h-full overflow-y-auto text-xs shadow-inner bg-gray-50 rounded-md">
+        <div className="h-full overflow-y-auto text-xs shadow-inner bg-gray-50 rounded-md border-1 border-gray-400">
           <FaxHistoryItemList
             items={historyItems.filter((item) => item.direction === "INCOMING")}
           />

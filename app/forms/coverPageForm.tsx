@@ -70,7 +70,7 @@ export const CoverPageForm = ({
       <Label>
         Korrekturen:{" "}
         <textarea
-          className="border rounded-md p-1 w-full text-black dark:text-white"
+          className="border border-gray-400 rounded-md p-1 w-full text-black dark:text-white"
           name="content"
           placeholder="z.B. 'Datum der VO muss sein: xx.xx.xxxx'"
           value={content}
