@@ -39,7 +39,7 @@ export default function History() {
   const data = useLoaderData<typeof loader>();
   return (
     <div className="flex md:h-full">
-      <div className="bg-slate-100 dark:bg-slate-700 h-full">
+      <div className="bg-slate-100 dark:bg-slate-700 h-full w-full">
         <HistoryView
           callsIncoming={data.callsIncoming}
           callsMissed={data.callsMissed}
