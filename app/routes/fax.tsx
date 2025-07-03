@@ -21,7 +21,7 @@ import { Input } from "../forms/input";
 import { Container } from "../components/container";
 import {
   DeleteButton,
-  TactileButton,
+  SimpleButton,
   ToggleButton,
 } from "../components/buttons";
 import FaxHistoryView from "../history/FaxHistoryView";
@@ -47,12 +47,6 @@ export async function action({ request }: ActionFunctionArgs) {
   const pdf = String(formData.get("pdf"));
   const actionType = String(formData.get("actionType"));
   const faxId = String(formData.get("faxId"));
-
-  // invariant(recipientNumber.length, "has to have a recipientNumber");
-  // invariant(
-  //   recipientNumber.match(/^\+[1-9]\d{1,14}$/),
-  //   "recipientNumber has to match +49123456789"
-  // );
 
   if (actionType !== "sendFax" && actionType !== "resendFax") {
     return {
@@ -566,7 +560,7 @@ export default function Fax() {
             </Container>
           )}
           {readyToCreateFax && !resultingPDF && (
-            <TactileButton
+            <SimpleButton
               label="🛠️ Fax vorbereiten"
               onClick={handleCreatePdf}
               disabled={!!resultingPdfUrl || !readyToCreateFax}
@@ -575,7 +569,7 @@ export default function Fax() {
           )}
 
           {resultingPdfUrl && (
-            <TactileButton
+            <SimpleButton
               label="  ♻️ alles zurücksetzen"
               onClick={() => handleReset()}
               color="gray"

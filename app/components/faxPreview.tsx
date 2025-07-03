@@ -1,5 +1,5 @@
 import { Form } from "react-router";
-import { TactileButton } from "./buttons";
+import { SimpleButton } from "./buttons";
 import { Container } from "./container";
 
 interface FaxPreviewProps {
@@ -40,7 +40,7 @@ export const FaxPreview = ({
               <input type="hidden" name="pdf" value={resultingPDFBase64} />
               <input type="hidden" name="actionType" value="sendFax" />
               <input type="hidden" name="faxId" value="" />
-              <TactileButton
+              <SimpleButton
                 label="📠 Fax versenden"
                 type="submit"
                 color="green"
@@ -63,7 +63,9 @@ export const FaxPreview = ({
       </div>
       {!resultingPdfUrl && (
         <>
-          <h2 className="text-xl font-semibold text-gray-800">Vorschau </h2>
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+            Vorschau{" "}
+          </h2>
           <h3>(erscheint hier sobald das Fax erzeugt wurde)</h3>
         </>
       )}
