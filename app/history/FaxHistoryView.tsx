@@ -92,7 +92,7 @@ export default function FaxHistoryView({
       <div className="flex-1 overflow-hidden bg-white dark:bg-gray-800 border border-t-0 border-gray-200 dark:border-gray-700 rounded-b-lg">
         {items.length === 0 ? (
           <div
-            className="p-6 text-center text-gray-500 dark:text-gray-400"
+            className="p-4 text-center text-gray-500 dark:text-gray-400"
             role="status"
             aria-live="polite"
           >
@@ -100,7 +100,7 @@ export default function FaxHistoryView({
           </div>
         ) : (
           <div
-            className={`h-full overflow-y-auto text-xs p-4 ${config.bgColor}`}
+            className={`h-full overflow-y-auto text-xs p-2 ${config.bgColor}`}
           >
             <FaxHistoryItemList items={items} showDirection={false} />
           </div>
