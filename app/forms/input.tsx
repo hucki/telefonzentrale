@@ -30,7 +30,7 @@ export const Input = ({
     <Label>
       {label}
       <input
-        className="text-slate-900 dark:text-slate-50 text-sm w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="text-slate-900 dark:text-slate-50 text-sm w-full p-3 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         type={type}
         autoComplete={autoComplete}
         name={name}
