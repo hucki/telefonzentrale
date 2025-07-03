@@ -6,6 +6,8 @@ import {
   PaperAirplaneIcon,
 } from "@heroicons/react/16/solid";
 import type { FaxHistoryItem } from "../types/history";
+import { DownloadButton } from "~/components/buttons";
+import { ResendFaxButton } from "~/components/resendFaxButton";
 
 type FaxStatusType = "FAILED" | "SENT" | "SENDING" | "PENDING";
 type FaxStatusItem = {
@@ -74,6 +76,17 @@ export const FaxHistoryItemList = ({ items }: { items: FaxHistoryItem[] }) => {
         today.getFullYear() === itemDate.getFullYear()
       );
     };
+    // {item.targetAlias} - {item.target}
+    const ItemLabel = () =>
+      item.direction === "INCOMING" ? (
+        <>
+          <pre>{item.source}</pre> {item.sourceAlias}
+        </>
+      ) : (
+        <>
+          <pre>{item.target}</pre> {item.targetAlias}
+        </>
+      );
     return (
       <div
         key={item.id}
@@ -91,39 +104,26 @@ export const FaxHistoryItemList = ({ items }: { items: FaxHistoryItem[] }) => {
             {faxStatusIcon}
             {faxStatusText}
           </span>
+          {faxStatusType === "FAILED" && item.id && (
+            <ResendFaxButton faxId={item.id} />
+          )}
         </div>
         <div className="flex flex-col">
-          {item.direction === "INCOMING" && (
-            <span>
-              {item.sourceAlias} - {item.source}
-            </span>
-          )}
-          {item.direction === "OUTGOING" && (
-            <span>
-              {item.targetAlias} - {item.target}
-            </span>
-          )}
+          <ItemLabel />
         </div>
 
-        {item.direction === "INCOMING" && (
-          <a
-            href={item.documentUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="text-blue-500"
-          >
-            Fax
-          </a>
+        {item.direction === "INCOMING" && item.documentUrl && (
+          <DownloadButton href={item.documentUrl} label="FAX" />
         )}
         {item.direction === "OUTGOING" && (
-          <a
-            href={item.reportUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="text-blue-500"
-          >
-            Sendebericht
-          </a>
+          <span className="grid items-center gap-0.5">
+            {item.documentUrl && (
+              <DownloadButton href={item.documentUrl} label="FAX" />
+            )}
+            {item.reportUrl && (
+              <DownloadButton href={item.reportUrl} label="Sende-Bericht" />
+            )}
+          </span>
         )}
       </div>
     );
