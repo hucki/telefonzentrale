@@ -14,6 +14,7 @@ import {
   fetchContacts,
   fetchHistoryWrapper,
   fetchTagline,
+  resendFax,
   sendFax,
 } from "../utils/api";
 import { Input } from "../forms/input";
@@ -44,11 +45,57 @@ export async function action({ request }: ActionFunctionArgs) {
   const recipientNumber = String(formData.get("recipientNumber"));
   const fileName = String(formData.get("fileName"));
   const pdf = String(formData.get("pdf"));
+  const actionType = String(formData.get("actionType"));
+  const faxId = String(formData.get("faxId"));
+
   // invariant(recipientNumber.length, "has to have a recipientNumber");
   // invariant(
   //   recipientNumber.match(/^\+[1-9]\d{1,14}$/),
   //   "recipientNumber has to match +49123456789"
   // );
+
+  if (actionType !== "sendFax" && actionType !== "resendFax") {
+    return {
+      result: "error",
+      message: "Unbekannte Aktion",
+      error: `actionType ${actionType} is not supported`,
+    };
+  }
+
+  if (actionType === "resendFax" && faxId) {
+    // resend fax
+    try {
+      const result = await resendFax(faxId);
+      const sessionId = result?.data.sessionId || "unknown";
+      if (sessionId === "unknown") {
+        return {
+          result: "error",
+          message: "Fax konnte nicht erneut gesendet werden",
+          error: "sessionId not found in response",
+        };
+      }
+      return {
+        result: "success",
+        message: `FaxID ${faxId} erneut gesendet (Session ID: ${sessionId})`,
+        error: undefined,
+      };
+    } catch (error) {
+      return {
+        result: "error",
+        message: `FaxID ${faxId} konnte nicht gesendet werden`,
+        error,
+      };
+    }
+  }
+  // send fax
+  if (!recipientName || !recipientNumber || !pdf || !fileName) {
+    return {
+      result: "error",
+      message: "Fax konnte nicht gesendet werden",
+      error: "recipientName, recipientNumber, pdf and fileName are required",
+    };
+  }
+
   try {
     const result = await sendFax(recipientNumber, pdf, fileName);
     const sessionId = result?.data.sessionId || "unknown";
@@ -502,26 +549,17 @@ export default function Fax() {
               </h2>
               <ul className="text-red-500 dark:text-red-200 font-mono p-1 text-xs list-disc list-inside">
                 {!recipientNumberMatch && (
-                  <li>
-                    Bitte Faxnummer im internationalen Format
-                    &quot;+49293112345&quot; angeben
-                  </li>
+                  <li>Faxnummer im Format &quot;+49293112345&quot; fehlt</li>
                 )}
                 {!uploadedPdf && <li>Bitte PDF-Dokument hochladen</li>}
                 {hasCoverPage && coverPageIncomplete && (
                   <>
                     {!recipientName && (
-                      <li>Deckblatt (VO Korrektur): Name Empfänger:in fehlt</li>
+                      <li>Deckblatt: Name Empfänger:in fehlt</li>
                     )}
-                    {!patientName && (
-                      <li>Deckblatt (VO Korrektur): Name Patient:in fehlt</li>
-                    )}
-                    {!prescriptionDate && (
-                      <li>Deckblatt (VO Korrektur): Datum fehlt</li>
-                    )}
-                    {!content && (
-                      <li>Deckblatt (VO Korrektur): Korrekturen fehlen</li>
-                    )}
+                    {!patientName && <li>Deckblatt: Name Patient:in fehlt</li>}
+                    {!prescriptionDate && <li>Deckblatt: Datum fehlt</li>}
+                    {!content && <li>Deckblatt: Korrekturen fehlen</li>}
                   </>
                 )}
               </ul>
