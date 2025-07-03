@@ -1,3 +1,6 @@
+import { ArrowDownTrayIcon } from "@heroicons/react/16/solid";
+import { Spinner } from "./spinner";
+
 interface ButtonProps {
   label: string;
 }
@@ -107,5 +110,53 @@ export const ToggleButton = ({ label, value, onChange }: ToggleButtonProps) => {
       label={label}
       color="gray"
     />
+  );
+};
+
+export interface DownloadButtonProps {
+  href: string;
+  label: string;
+  className?: string;
+}
+
+export const DownloadButton = ({
+  href,
+  label,
+  className = "",
+}: DownloadButtonProps) => {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className={`px-2 py-1 text-xs rounded flex items-center gap-1 bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800 transition-colors ${className} max-w-fit max-h-fit`}
+    >
+      <ArrowDownTrayIcon width={14} /> {label}
+    </a>
+  );
+};
+
+type SimpleButtonProps = {
+  label: string;
+  pending?: boolean;
+  className?: string;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>;
+export const SimpleButton = ({
+  label,
+  className,
+  pending = false,
+  ...props
+}: SimpleButtonProps) => {
+  return (
+    <button
+      disabled={pending}
+      className={`px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors ${className} ${
+        pending ? "opacity-50 cursor-not-allowed" : ""
+      }`}
+      {...props}
+    >
+      {pending ? <Spinner size="sm" /> : null}
+      {label}
+    </button>
   );
 };
