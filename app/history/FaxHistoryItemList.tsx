@@ -8,6 +8,8 @@ import {
 import type { FaxHistoryItem } from "../types/history";
 import { DownloadButton } from "~/components/buttons";
 import { ResendFaxButton } from "~/components/resendFaxButton";
+import { ArchiveButton } from "~/components/archiveButton";
+import { useHistoryItemUpdate } from "~/hooks/useHistoryItemUpdate";
 
 type FaxStatusType = "FAILED" | "SENT" | "SENDING" | "PENDING";
 type FaxStatusItem = {
@@ -210,6 +212,8 @@ export const FaxHistoryItemList = ({
   items: FaxHistoryItem[];
   showDirection?: boolean;
 }) => {
+  const { updateHistoryItem, updatingItemIds } = useHistoryItemUpdate();
+
   if (!items || items.length === 0) {
     return (
       <div
@@ -227,6 +231,7 @@ export const FaxHistoryItemList = ({
       {items.map((item) => {
         const faxStatusType = item.faxStatusType as FaxStatusType | undefined;
         const isToday = isItemFromToday(item);
+        const isPending = updatingItemIds.includes(item.id);
         const formattedDate = new Date(item.lastModified).toLocaleString(
           "de-DE",
           {
@@ -273,8 +278,24 @@ export const FaxHistoryItemList = ({
                   )}
                 </time>
               </div>
-
-              <FaxStatusBadge faxStatusType={faxStatusType} size="xs" />
+              <div className="flex items-center gap-2">
+                <FaxStatusBadge faxStatusType={faxStatusType} size="xs" />
+                {/* Archive/Unarchive button */}
+                <div className="flex justify-end">
+                  <ArchiveButton
+                    isArchived={item.archived}
+                    onToggleArchive={(archived) => {
+                      updateHistoryItem({
+                        id: item.id,
+                        archived,
+                        starred: item.starred,
+                        read: item.read,
+                      });
+                    }}
+                    disabled={isPending}
+                  />
+                </div>
+              </div>
             </header>
 
             {/* Main content area */}
