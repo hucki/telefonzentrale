@@ -162,7 +162,7 @@ export const SimpleButton = ({
       disabled={pending}
       className={`${
         sizeClasses[size]
-      } bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors ${className} ${
+      } bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors cursor-pointer ${className} ${
         pending ? "opacity-50 cursor-not-allowed" : ""
       }`}
       {...props}
