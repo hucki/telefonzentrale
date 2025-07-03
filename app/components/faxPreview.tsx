@@ -38,6 +38,8 @@ export const FaxPreview = ({
               />
               <input type="hidden" name="fileName" value={fileName + ".pdf"} />
               <input type="hidden" name="pdf" value={resultingPDFBase64} />
+              <input type="hidden" name="actionType" value="sendFax" />
+              <input type="hidden" name="faxId" value="" />
               <TactileButton
                 label="📠 Fax versenden"
                 type="submit"
