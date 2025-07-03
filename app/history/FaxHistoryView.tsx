@@ -1,14 +1,37 @@
-import { useRouteLoaderData } from "react-router";
+import { useRouteLoaderData, useLoaderData } from "react-router";
 import type { LoaderResult } from "../routes/fax";
 import type { FaxHistoryItem } from "../types/history";
 import { FaxHistoryItemList } from "./FaxHistoryItemList";
 import { getTypeConfig } from "../utils/typeConfig";
 
-export default function FaxHistoryView() {
-  const loaderData = useRouteLoaderData<LoaderResult>("routes/fax");
-  const historyItems = loaderData?.faxHistory
-    ? (loaderData?.faxHistory as unknown as FaxHistoryItem[])
-    : [];
+interface FaxHistoryViewProps {
+  historyItems?: FaxHistoryItem[];
+}
+
+export default function FaxHistoryView({
+  historyItems: propHistoryItems,
+}: FaxHistoryViewProps = {}) {
+  // If historyItems are passed as props, use them, otherwise get from loader data
+  let historyItems: FaxHistoryItem[];
+
+  if (propHistoryItems) {
+    historyItems = propHistoryItems;
+  } else {
+    // Try to get data from the current route first, then fallback to the fax route
+    let loaderData: any;
+
+    try {
+      // This will work for archive.fax route
+      loaderData = useLoaderData();
+    } catch {
+      // Fallback to the main fax route data
+      loaderData = useRouteLoaderData<LoaderResult>("routes/fax");
+    }
+
+    historyItems = loaderData?.faxHistory
+      ? (loaderData?.faxHistory as unknown as FaxHistoryItem[])
+      : [];
+  }
 
   if (!historyItems?.length) {
     return (
@@ -76,7 +99,9 @@ export default function FaxHistoryView() {
             Keine {title.toLowerCase()}-Einträge vorhanden
           </div>
         ) : (
-          <div className="h-full overflow-y-auto text-xs p-4">
+          <div
+            className={`h-full overflow-y-auto text-xs p-4 ${config.bgColor}`}
+          >
             <FaxHistoryItemList items={items} showDirection={false} />
           </div>
         )}
@@ -85,7 +110,7 @@ export default function FaxHistoryView() {
   );
 
   return (
-    <div className="p-4 flex flex-col h-full overflow-hidden gap-4">
+    <div className="p-1 flex flex-col h-full overflow-hidden gap-4">
       {renderSection(outgoingItems, outgoingConfig, "Fax Ausgang")}
       {renderSection(incomingItems, incomingConfig, "Fax Eingang")}
     </div>
