@@ -1,6 +1,5 @@
 import { fetchHistoryWrapper } from "../utils/api";
 import { useLoaderData } from "react-router";
-import { HistoryView } from "../history/HistoryView";
 import { sortDescending } from "~/utils/sortItems";
 import HistoryItemListContainer from "~/history/HistoryItemListContainer";
 
