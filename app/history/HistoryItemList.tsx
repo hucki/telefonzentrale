@@ -80,12 +80,16 @@ export const HistoryItemList = ({ items }: { items: HistoryItem[] }) => {
     }
   }, [isPending]);
 
-  return items.map((item) => (
-    <HistoryListItem
-      key={item.id}
-      item={item}
-      isPending={lastUpdatedItemId === item.id && isPending}
-      handleUpdateHistoryItem={handleUpdateHistoryItem}
-    />
-  ));
+  return (
+    <div className="space-y-2" role="list" aria-label="Anruf-Verlauf">
+      {items.map((item) => (
+        <HistoryListItem
+          key={item.id}
+          item={item}
+          isPending={lastUpdatedItemId === item.id && isPending}
+          handleUpdateHistoryItem={handleUpdateHistoryItem}
+        />
+      ))}
+    </div>
+  );
 };

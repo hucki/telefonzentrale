@@ -1,4 +1,8 @@
-import { ArchiveBoxXMarkIcon, CheckIcon } from "@heroicons/react/16/solid";
+import {
+  ArchiveBoxXMarkIcon,
+  CheckIcon,
+  StarIcon,
+} from "@heroicons/react/16/solid";
 import { ArchiveBoxArrowDownIcon } from "@heroicons/react/24/solid";
 import type { HistoryItem } from "~/types/history";
 import type { HistoryItemUpdateProps } from "~/utils/api";
@@ -24,6 +28,7 @@ export const HistoryListItem = ({
     );
   };
 
+  const isToday = isItemFromToday(item);
   const displayDate = new Date(item.created).toLocaleString("de-DE", {
     day: "2-digit",
     month: "2-digit",
@@ -45,102 +50,163 @@ export const HistoryListItem = ({
     : null;
 
   return (
-    <div
-      key={item.id}
-      className={`grid grid-cols-1 lg:grid-cols-3 p-2 border-b font-mono border-gray-400 gap-1 bg-white dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-green-900 h-full ${
-        isPending ? "animate-pulse bg-yellow-100 dark:bg-yellow-700" : ""
-      }`}
+    <article
+      className={`
+        p-3 rounded-lg border transition-colors duration-200
+        bg-white dark:bg-gray-800
+        border-gray-200 dark:border-gray-700
+        hover:bg-gray-50 dark:hover:bg-gray-700
+        focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2
+        dark:focus-within:ring-offset-gray-800
+        ${
+          isToday
+            ? "ring-1 ring-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:ring-blue-700"
+            : ""
+        }
+        ${isPending ? "opacity-75 animate-pulse" : ""}
+      `}
+      role="listitem"
+      aria-labelledby={`history-${item.id}-title`}
     >
-      <div className="flex flex-col">
-        <span className={`${isItemFromToday(item) ? "font-bold" : ""} `}>
+      {/* Header with timestamp and read status */}
+      <header className="flex items-start justify-between mb-2">
+        <div className="flex items-center gap-2">
           <CheckIcon
             title={item.read === true ? "Gelesen" : "Ungelesen"}
             aria-label={item.read === true ? "Gelesen" : "Ungelesen"}
-            className={`h-5 w-5 inline mr-2 ${
-              item.read === true ? "text-green-600" : "text-gray-300"
+            className={`h-4 w-4 flex-shrink-0 ${
+              item.read === true
+                ? "text-green-600 dark:text-green-400"
+                : "text-gray-300 dark:text-gray-600"
             }`}
           />
-          {displayDate}
-          {item.duration && (
-            <span className="text-xs text-gray-500 dark:text-gray-100 ml-2 lg:col-span-2">
-              ({displayDuration} Min.)
+          <time
+            className={`text-xs font-mono ${
+              isToday
+                ? "font-bold text-blue-900 dark:text-blue-100"
+                : "text-gray-600 dark:text-gray-400"
+            }`}
+            dateTime={item.created}
+            id={`history-${item.id}-title`}
+          >
+            {displayDate}
+            {isToday && (
+              <span className="ml-2 text-xs bg-blue-200 text-blue-800 dark:bg-blue-700 dark:text-blue-200 px-2 py-0.5 rounded-full">
+                Heute
+              </span>
+            )}
+          </time>
+        </div>
+
+        {/* Archive/Unarchive button */}
+        <div className="flex-shrink-0">
+          {!item.archived ? (
+            <button
+              onClick={() => {
+                handleUpdateHistoryItem({
+                  id: item.id,
+                  archived: true,
+                  starred: item.starred,
+                  read: item.read,
+                });
+              }}
+              className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+              aria-label="Element archivieren"
+              title="Archivieren"
+            >
+              <ArchiveBoxArrowDownIcon className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                handleUpdateHistoryItem({
+                  id: item.id,
+                  archived: false,
+                  starred: item.starred,
+                  read: item.read,
+                });
+              }}
+              className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+              aria-label="Element aus Archiv entfernen"
+              title="Aus Archiv entfernen"
+            >
+              <ArchiveBoxXMarkIcon className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* Main content area */}
+      <div className="space-y-2">
+        {/* Contact information and duration */}
+        <div className="flex items-center justify-between">
+          <div className="text-xs font-mono text-gray-900 dark:text-gray-100">
+            {(item.direction === "INCOMING" ||
+              item.direction === "MISSED_INCOMING") &&
+              displaySource}
+            {item.direction === "OUTGOING" && displayTarget}
+          </div>
+
+          {displayDuration && (
+            <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+              {displayDuration} Min.
             </span>
           )}
-        </span>
-      </div>
-      <div className="flex flex-col">
-        {(item.direction === "INCOMING" ||
-          item.direction === "MISSED_INCOMING") && <span>{displaySource}</span>}
-        {item.direction === "OUTGOING" && <span>{displayTarget}</span>}
-      </div>
-      {!item.archived && (
-        <ArchiveBoxArrowDownIcon
-          className="h-6 w-6 text-orange-600 cursor-pointer justify-self-end"
-          onClick={() => {
-            handleUpdateHistoryItem({
-              id: item.id,
-              archived: true,
-              starred: item.starred,
-              read: item.read,
-            });
-          }}
-        />
-      )}
-      {item.archived && (
-        <ArchiveBoxXMarkIcon
-          className="h-6 w-6 text-orange-600 cursor-pointer justify-self-end"
-          onClick={() => {
-            handleUpdateHistoryItem({
-              id: item.id,
-              archived: false,
-              starred: item.starred,
-              read: item.read,
-            });
-          }}
-        />
-      )}
+        </div>
 
-      {item.type === "VOICEMAIL" && item.recordingUrl && (
-        <>
-          <audio
-            controls
-            className="lg:col-span-3 w-full"
-            preload="none"
-            onPlay={() => {
+        {/* Voicemail specific content */}
+        {item.type === "VOICEMAIL" && item.recordingUrl && (
+          <div className="space-y-2">
+            <audio
+              controls
+              className="w-full h-8"
+              preload="none"
+              onPlay={() => {
+                handleUpdateHistoryItem({
+                  id: item.id,
+                  archived: item.archived,
+                  starred: item.starred,
+                  read: true,
+                });
+              }}
+            >
+              <track kind="captions" />
+              <source src={item.recordingUrl} type="audio/mpeg" />
+              Your browser does not support the audio element.
+            </audio>
+
+            {item.transcription && (
+              <div className="text-xs text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-2 rounded border-l-2 border-blue-200 dark:border-blue-700">
+                <span className="font-medium">Transkription:</span>{" "}
+                {item.transcription}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Notes section */}
+        <div className="space-y-1">
+          <label
+            htmlFor={`note-${item.id}`}
+            className="block text-xs font-medium text-gray-500 dark:text-gray-400"
+          >
+            Notiz:
+          </label>
+          <input
+            id={`note-${item.id}`}
+            type="text"
+            className="w-full text-xs border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400"
+            defaultValue={item.note || ""}
+            placeholder="Notiz hinzufügen..."
+            onBlur={(e) => {
               handleUpdateHistoryItem({
                 id: item.id,
-                archived: item.archived,
-                starred: item.starred,
-                read: true,
+                note: e.target.value,
               });
             }}
-          >
-            <track kind="captions" />
-            <source src={item.recordingUrl} type="audio/mpeg" />
-            Your browser does not support the audio element.
-          </audio>
-
-          {item.transcription && (
-            <div className="text-xs text-gray-500 dark:text-gray-100 ml-2 lg:col-span-2">
-              Transkription: {item.transcription}
-            </div>
-          )}
-        </>
-      )}
-      <span className="text-xs text-gray-500 dark:text-gray-100 ml-2 lg:col-span-3">
-        Notiz:{" "}
-        <input
-          type="text"
-          className="border border-gray-300 dark:border-gray-600 rounded-md p-1 text-xs w-full"
-          defaultValue={item.note || ""}
-          onBlur={(e) => {
-            handleUpdateHistoryItem({
-              id: item.id,
-              note: e.target.value,
-            });
-          }}
-        />
-      </span>
-    </div>
+          />
+        </div>
+      </div>
+    </article>
   );
 };
