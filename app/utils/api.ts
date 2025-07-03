@@ -118,7 +118,8 @@ export const fetchContacts = async () => {
 /**
  *
  * @param {string} recipient
- * @param {string} filePath
+ * @param {string} base64Content
+ * @param {string} fileName
  */
 export const sendFax = async (
   recipient: string,
@@ -143,6 +144,29 @@ export const sendFax = async (
   }).then((res) => res.json());
 
   return sendFaxResponse;
+};
+
+/**
+ * takes the faxId of a fax and resends it
+ *
+ * @param {string} faxId
+ * @returns resendResponse
+ */
+export const resendFax = async (faxId: string) => {
+  const data = {
+    faxlineId: FAXLINE_ID,
+    faxId,
+  };
+  const fetchHeaders = new Headers();
+  fetchHeaders.append("Accept", "application/json");
+  fetchHeaders.append("Content-Type", "application/json");
+  fetchHeaders.append("Authorization", `Basic ${btoa(`${TOKEN_ID}:${TOKEN}`)}`);
+  const resendResponse = await fetch(`${BASE_URL}/v2/sessions/fax/resend`, {
+    method: "POST",
+    headers: fetchHeaders,
+    body: JSON.stringify(data),
+  }).then((res) => res.json());
+  return resendResponse;
 };
 
 export const fetchFaxStatus = async (sessionId: string) => {
