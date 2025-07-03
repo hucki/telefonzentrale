@@ -1,11 +1,7 @@
-import {
-  ArchiveBoxXMarkIcon,
-  CheckIcon,
-  StarIcon,
-} from "@heroicons/react/16/solid";
-import { ArchiveBoxArrowDownIcon } from "@heroicons/react/24/solid";
+import { CheckIcon, StarIcon } from "@heroicons/react/16/solid";
 import type { HistoryItem } from "~/types/history";
 import type { HistoryItemUpdateProps } from "~/utils/api";
+import { ArchiveButton } from "~/components/archiveButton";
 
 type HistoryListItemProps = {
   item: HistoryItem;
@@ -100,39 +96,18 @@ export const HistoryListItem = ({
 
         {/* Archive/Unarchive button */}
         <div className="flex-shrink-0">
-          {!item.archived ? (
-            <button
-              onClick={() => {
-                handleUpdateHistoryItem({
-                  id: item.id,
-                  archived: true,
-                  starred: item.starred,
-                  read: item.read,
-                });
-              }}
-              className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-              aria-label="Element archivieren"
-              title="Archivieren"
-            >
-              <ArchiveBoxArrowDownIcon className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                handleUpdateHistoryItem({
-                  id: item.id,
-                  archived: false,
-                  starred: item.starred,
-                  read: item.read,
-                });
-              }}
-              className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-              aria-label="Element aus Archiv entfernen"
-              title="Aus Archiv entfernen"
-            >
-              <ArchiveBoxXMarkIcon className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-            </button>
-          )}
+          <ArchiveButton
+            isArchived={item.archived}
+            onToggleArchive={(archived) => {
+              handleUpdateHistoryItem({
+                id: item.id,
+                archived,
+                starred: item.starred,
+                read: item.read,
+              });
+            }}
+            disabled={isPending}
+          />
         </div>
       </header>
 
