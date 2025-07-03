@@ -1,5 +1,6 @@
 import { Outlet, useNavigation } from "react-router";
 import { Navigation } from "../navigation/navigation";
+import { Spinner, SpinnerOverlay } from "~/components/spinner";
 
 export default function Layout() {
   const navigation = useNavigation();
@@ -10,12 +11,7 @@ export default function Layout() {
         <Navigation />
       </aside>
       <main className="w-full">
-        {isNavigating && (
-          <div className="flex items-center justify-center h-full">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
-          </div>
-        )}
-        {!isNavigating && <Outlet />}
+        {isNavigating ? <Spinner size="l" /> : <Outlet />}
       </main>
     </div>
   );
