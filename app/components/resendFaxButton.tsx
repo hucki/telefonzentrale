@@ -15,7 +15,12 @@ export const ResendFaxButton = ({ faxId }: { faxId: string }) => {
     <fetcher.Form method="POST" action="/fax">
       <input type="hidden" name="actionType" value="resendFax" />
       <input type="hidden" name="faxId" value={faxId} />
-      <SimpleButton label="erneut senden" type="submit" pending={pending} />
+      <SimpleButton
+        label="erneut senden"
+        type="submit"
+        pending={pending}
+        size="xs"
+      />
     </fetcher.Form>
   );
 };
