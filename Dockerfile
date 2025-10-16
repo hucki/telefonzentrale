@@ -1,20 +1,21 @@
 # Stage 1: Development dependencies
 FROM node:20-alpine AS development-dependencies-env
-COPY . /app
 WORKDIR /app
-RUN npm ci
+COPY package.json ./
+RUN npm install
+COPY . .
 
 # Stage 2: Production dependencies
 FROM node:20-alpine AS production-dependencies-env
-COPY ./package.json package-lock.json /app/
+COPY ./package.json /app/
 WORKDIR /app
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 # Stage 3: Build application
 FROM node:20-alpine AS build-env
-COPY . /app/
-COPY --from=development-dependencies-env /app/node_modules /app/node_modules
 WORKDIR /app
+COPY . .
+COPY --from=development-dependencies-env /app/node_modules ./node_modules
 RUN npm run build
 
 ARG VITE_BASE_URL
