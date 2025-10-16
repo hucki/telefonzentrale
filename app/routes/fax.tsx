@@ -41,12 +41,13 @@ export type FaxSendResult = {
 };
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const recipientName = String(formData.get("recipientName"));
+  const recipientName = String(formData.get("recipientName") || "");
   const recipientNumber = String(formData.get("recipientNumber"));
   const fileName = String(formData.get("fileName"));
   const pdf = String(formData.get("pdf"));
   const actionType = String(formData.get("actionType"));
   const faxId = String(formData.get("faxId"));
+  const hasCoverPage = String(formData.get("hasCoverPage")) === "true";
 
   if (actionType !== "sendFax" && actionType !== "resendFax") {
     return {
@@ -66,28 +67,38 @@ export async function action({ request }: ActionFunctionArgs) {
           result: "error",
           message: "Fax konnte nicht erneut gesendet werden",
           error: "sessionId not found in response",
-        };
+        } as FaxSendResult;
       }
       return {
         result: "success",
         message: `FaxID ${faxId} erneut gesendet (Session ID: ${sessionId})`,
-        error: undefined,
-      };
+      } as FaxSendResult;
     } catch (error) {
+      console.error("Resend fax error:", error);
       return {
         result: "error",
         message: `FaxID ${faxId} konnte nicht gesendet werden`,
-        error,
-      };
+        error: error instanceof Error ? error.message : String(error),
+      } as FaxSendResult;
     }
   }
-  // send fax
-  if (!recipientName || !recipientNumber || !pdf || !fileName) {
+
+  // Validate required fields for sending fax
+  if (!recipientNumber || !pdf || !fileName) {
     return {
       result: "error",
       message: "Fax konnte nicht gesendet werden",
-      error: "recipientName, recipientNumber, pdf and fileName are required",
-    };
+      error: "recipientNumber, pdf and fileName are required",
+    } as FaxSendResult;
+  }
+
+  // Additional validation for cover page if it's being used
+  if (hasCoverPage && !recipientName) {
+    return {
+      result: "error",
+      message: "Fax konnte nicht gesendet werden",
+      error: "recipientName is required when using a cover page",
+    } as FaxSendResult;
   }
 
   try {
@@ -98,19 +109,24 @@ export async function action({ request }: ActionFunctionArgs) {
         result: "error",
         message: "Fax konnte nicht gesendet werden",
         error: "sessionId not found in response",
-      };
+      } as FaxSendResult;
     }
+
+    const successMessage = recipientName
+      ? `Fax gesendet an ${recipientName} mit der Nummer ${recipientNumber} (Session ID: ${sessionId})`
+      : `Fax gesendet an ${recipientNumber} (Session ID: ${sessionId})`;
+
     return {
       result: "success",
-      message: `Fax gesendet an ${recipientName} mit der Nummer ${recipientNumber} (Session ID: ${sessionId})`,
-      error: undefined,
-    };
+      message: successMessage,
+    } as FaxSendResult;
   } catch (error) {
+    console.error("Send fax error:", error);
     return {
       result: "error",
       message: "Fax konnte nicht gesendet werden",
-      error,
-    };
+      error: error instanceof Error ? error.message : String(error),
+    } as FaxSendResult;
   }
 }
 
@@ -364,7 +380,9 @@ export default function Fax() {
   };
 
   const resultingPdfUrl = resultingPDF
-    ? URL.createObjectURL(new Blob([resultingPDF], { type: "application/pdf" }))
+    ? URL.createObjectURL(
+        new Blob([new Uint8Array(resultingPDF)], { type: "application/pdf" })
+      )
     : undefined;
 
   const recipientNumberMatch = Boolean(
@@ -384,14 +402,20 @@ export default function Fax() {
   )?.data as FaxSendResult;
 
   const coverPageIncomplete =
-    !sender || !recipientName || !content || !patientName || !prescriptionDate;
-  const readyCoverPage =
-    !hasCoverPage || (hasCoverPage && !coverPageIncomplete);
+    hasCoverPage &&
+    (!sender ||
+      !recipientName ||
+      !content ||
+      !patientName ||
+      !prescriptionDate);
+
+  const readyCoverPage = !hasCoverPage || !coverPageIncomplete;
+
   const readyToCreateFax =
     recipientNumberMatch && uploadedPdf && readyCoverPage;
+
   const canSendFax = Boolean(
     loaderData?.status === "ok" &&
-      readyCoverPage &&
       readyToCreateFax &&
       resultingPdfUrl &&
       resultingPDFBase64
@@ -554,6 +578,7 @@ export default function Fax() {
                     {!patientName && <li>Deckblatt: Name Patient:in fehlt</li>}
                     {!prescriptionDate && <li>Deckblatt: Datum fehlt</li>}
                     {!content && <li>Deckblatt: Korrekturen fehlen</li>}
+                    {!sender && <li>Deckblatt: Absender fehlt</li>}
                   </>
                 )}
               </ul>
