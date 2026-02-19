@@ -9,7 +9,7 @@ export const HistoryItemList = ({ items }: { items: HistoryItem[] }) => {
   const { state: revalidationState } = useRevalidator();
   const { updateHistoryItem, isUpdating } = useHistoryItemUpdate();
   const [lastUpdatedItemId, setLastUpdatedItemId] = useState<string | null>(
-    null
+    null,
   );
   const isPending = isUpdating || revalidationState !== "idle";
 
@@ -30,7 +30,7 @@ export const HistoryItemList = ({ items }: { items: HistoryItem[] }) => {
       archived?: boolean;
       starred?: boolean;
       read?: boolean;
-    }
+    },
   ) => {
     const item = items.find((item) => item.id === id);
     if (!item) return;

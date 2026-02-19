@@ -1,8 +1,32 @@
-import { CheckIcon, StarIcon } from "@heroicons/react/16/solid";
+import { CheckIcon } from "@heroicons/react/16/solid";
 import type { HistoryItem } from "~/types/history";
 import type { HistoryItemUpdateProps } from "~/utils/api";
 import { ArchiveButton } from "~/components/archiveButton";
+import { Avatar } from "~/components/avatar";
+import {
+  getIsIncoming,
+  getTargetColor,
+  getTargetName,
+  isItemFromToday,
+} from "~/utils/history";
 
+const getDisplayDate = (created: string) =>
+  new Date(created).toLocaleString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+const getDisplayDuration = (duration: number) =>
+  `${Math.floor(duration / 60)}:${String(duration % 60).padStart(2, "0")}`;
+
+const getDisplaySource = (source: string, sourceAlias?: string) =>
+  source + (sourceAlias ? ` (${sourceAlias})` : "");
+
+const getDisplayTarget = (target: string, targetAlias?: string) =>
+  target + (targetAlias ? ` (${targetAlias})` : "");
 type HistoryListItemProps = {
   item: HistoryItem;
   isPending: boolean;
@@ -14,35 +38,17 @@ export const HistoryListItem = ({
   isPending,
   handleUpdateHistoryItem,
 }: HistoryListItemProps) => {
-  const isItemFromToday = (item: HistoryItem) => {
-    const today = new Date();
-    const itemDate = new Date(item.created);
-    return (
-      today.getDate() === itemDate.getDate() &&
-      today.getMonth() === itemDate.getMonth() &&
-      today.getFullYear() === itemDate.getFullYear()
-    );
-  };
-
   const isToday = isItemFromToday(item);
-  const displayDate = new Date(item.created).toLocaleString("de-DE", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const isIncoming = getIsIncoming(item.direction);
+
   const displayDuration = item.duration
-    ? `${Math.floor(item.duration / 60)}:${String(item.duration % 60).padStart(
-        2,
-        "0"
-      )}`
+    ? getDisplayDuration(item.duration)
     : null;
   const displaySource = item.source
-    ? item.source + (item.sourceAlias ? ` (${item.sourceAlias})` : "")
+    ? getDisplaySource(item.source, item.sourceAlias)
     : null;
   const displayTarget = item.target
-    ? item.target + (item.targetAlias ? ` (${item.targetAlias})` : "")
+    ? getDisplayTarget(item.target, item.targetAlias)
     : null;
 
   return (
@@ -54,11 +60,6 @@ export const HistoryListItem = ({
         hover:bg-gray-50 dark:hover:bg-gray-700
         focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2
         dark:focus-within:ring-offset-gray-800
-        ${
-          isToday
-            ? "ring-1 ring-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:ring-blue-700"
-            : ""
-        }
         ${isPending ? "opacity-75 animate-pulse" : ""}
       `}
       role="listitem"
@@ -70,32 +71,26 @@ export const HistoryListItem = ({
           <CheckIcon
             title={item.read === true ? "Gelesen" : "Ungelesen"}
             aria-label={item.read === true ? "Gelesen" : "Ungelesen"}
-            className={`h-4 w-4 flex-shrink-0 ${
+            className={`h-4 w-4 shrink-0 ${
               item.read === true
                 ? "text-green-600 dark:text-green-400"
                 : "text-gray-300 dark:text-gray-600"
             }`}
           />
           <time
-            className={`text-xs font-mono ${
+            className={`text-xs font-mono px-2 py-0.5 rounded-full ${
               isToday
-                ? "font-bold text-blue-900 dark:text-blue-100"
+                ? "font-bold text-blue-900 dark:text-blue-100 bg-blue-200  dark:bg-blue-700"
                 : "text-gray-600 dark:text-gray-400"
             }`}
             dateTime={item.created}
             id={`history-${item.id}-title`}
           >
-            {displayDate}
-            {isToday && (
-              <span className="ml-2 text-xs bg-blue-200 text-blue-800 dark:bg-blue-700 dark:text-blue-200 px-2 py-0.5 rounded-full">
-                Heute
-              </span>
-            )}
+            {getDisplayDate(item.created)}
           </time>
         </div>
-
         {/* Archive/Unarchive button */}
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <ArchiveButton
             isArchived={item.archived}
             onToggleArchive={(archived) => {
@@ -115,11 +110,19 @@ export const HistoryListItem = ({
       <div className="space-y-2">
         {/* Contact information and duration */}
         <div className="flex items-center justify-between">
-          <div className="text-xs font-mono text-gray-900 dark:text-gray-100">
-            {(item.direction === "INCOMING" ||
-              item.direction === "MISSED_INCOMING") &&
-              displaySource}
-            {item.direction === "OUTGOING" && displayTarget}
+          <div className="text-xs font-mono text-gray-900 dark:text-gray-100 flex items-center justify-between gap-2">
+            {isIncoming && (
+              <>
+                <Avatar
+                  name={getTargetName(item.target)}
+                  color={getTargetColor(getTargetName(item.target))}
+                  size="sm"
+                  className="shrink-0"
+                />
+                {displaySource}
+              </>
+            )}
+            {!isIncoming && displayTarget}
           </div>
 
           {displayDuration && (

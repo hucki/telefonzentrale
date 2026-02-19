@@ -10,6 +10,13 @@ import { DownloadButton } from "~/components/buttons";
 import { ResendFaxButton } from "~/components/resendFaxButton";
 import { ArchiveButton } from "~/components/archiveButton";
 import { useHistoryItemUpdate } from "~/hooks/useHistoryItemUpdate";
+import { Avatar } from "~/components/avatar";
+import {
+  getIsIncoming,
+  getTargetColor,
+  getTargetName,
+  isItemFromToday,
+} from "~/utils/history";
 
 type FaxStatusType = "FAILED" | "SENT" | "SENDING" | "PENDING";
 type FaxStatusItem = {
@@ -74,16 +81,6 @@ const faxStatus: FaxStatus = {
   },
 };
 
-const isItemFromToday = (item: FaxHistoryItem): boolean => {
-  const today = new Date();
-  const itemDate = new Date(item.lastModified);
-  return (
-    today.getDate() === itemDate.getDate() &&
-    today.getMonth() === itemDate.getMonth() &&
-    today.getFullYear() === itemDate.getFullYear()
-  );
-};
-
 const FaxContactInfo = ({
   item,
   showDirection = false,
@@ -91,9 +88,12 @@ const FaxContactInfo = ({
   item: FaxHistoryItem;
   showDirection?: boolean;
 }) => {
-  const isIncoming = item.direction === "INCOMING";
+  const isIncoming = getIsIncoming(item.direction);
   const contactNumber = isIncoming ? item.source : item.target;
   const contactName = isIncoming ? item.sourceAlias : item.targetAlias;
+
+  const targetName = getTargetName(item.target);
+  const targetColor = getTargetColor(targetName);
 
   return (
     <div className="space-y-1">
@@ -230,14 +230,17 @@ export const FaxHistoryItemList = ({
     <div className="space-y-2" role="list" aria-label="Fax-Verlauf">
       {items.map((item) => {
         const faxStatusType = item.faxStatusType as FaxStatusType | undefined;
+        const isIncoming = getIsIncoming(item.direction);
         const isToday = isItemFromToday(item);
+        const targetName = getTargetName(item.target);
+        const targetColor = getTargetColor(targetName);
         const isPending = updatingItemIds.includes(item.id);
         const formattedDate = new Date(item.lastModified).toLocaleString(
           "de-DE",
           {
             dateStyle: "short",
             timeStyle: "short",
-          }
+          },
         );
 
         return (
@@ -250,32 +253,30 @@ export const FaxHistoryItemList = ({
               hover:bg-gray-50 dark:hover:bg-gray-700
               focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2
               dark:focus-within:ring-offset-gray-800
-              ${
-                isToday
-                  ? "ring-1 ring-blue-200 bg-blue-50 dark:bg-blue-900/20 dark:ring-blue-700"
-                  : ""
-              }
             `}
             role="listitem"
             aria-labelledby={`fax-${item.id}-title`}
           >
             {/* Header with date and status */}
             <header className="flex items-start justify-between mb-3">
-              <div className="space-y-1">
+              <div className="space-y-1 px-2 py-0.5 rounded-full flex gap-2">
+                {isIncoming && (
+                  <Avatar
+                    name={targetName}
+                    color={targetColor}
+                    size="sm"
+                    className="shrink-0"
+                  />
+                )}
                 <time
                   className={`text-sm ${
                     isToday
-                      ? "font-bold text-blue-900 dark:text-blue-100"
+                      ? "font-bold bg-blue-200 text-blue-800 dark:bg-blue-700 dark:text-blue-200"
                       : "text-gray-600 dark:text-gray-400"
                   }`}
                   dateTime={item.lastModified}
                 >
                   {formattedDate}
-                  {isToday && (
-                    <span className="ml-2 text-xs bg-blue-200 text-blue-800 dark:bg-blue-700 dark:text-blue-200 px-2 py-0.5 rounded-full">
-                      Heute
-                    </span>
-                  )}
                 </time>
               </div>
               <div className="flex items-center gap-2">

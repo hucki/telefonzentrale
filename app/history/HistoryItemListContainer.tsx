@@ -23,8 +23,8 @@ export default function HistoryItemListContainer({
     direction === "INCOMING"
       ? "Eingehend"
       : direction === "OUTGOING"
-      ? "Ausgehend"
-      : "Verpasst";
+        ? "Ausgehend"
+        : "Verpasst";
 
   const typeLabel = `${config.name} ${directionName}${
     isArchive ? " (Archiv)" : ""
