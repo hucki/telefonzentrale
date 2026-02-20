@@ -2,7 +2,7 @@ export const Avatar = ({
   name,
   size = "md",
   className = "",
-  color = "bg-gray-300",
+  color = "bg-gray-300 text-gray-700 dark:bg-gray-700 dark:text-gray-300",
 }: {
   name: string;
   size?: "sm" | "md" | "lg";
@@ -25,7 +25,7 @@ export const Avatar = ({
 
   return (
     <article
-      className={`flex items-center justify-center rounded-full ${color} text-white font-bold ${sizeClasses} ${className} overflow-hidden`}
+      className={`flex items-center justify-center rounded-full ${color} font-bold ${sizeClasses} ${className} overflow-hidden`}
       aria-label={`Avatar von ${name}`}
     >
       {initials === "A" ? (
