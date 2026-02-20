@@ -17,7 +17,7 @@ export const Container = ({
 }: ContainerProps) => {
   return (
     <div
-      className={`p-4 ${bg} ${rounded} ${shadow} border-1 border-gray-400 grid gap-2 auto-rows-max ${className}`}
+      className={`p-4 ${bg} ${rounded} ${shadow} border border-gray-400 grid gap-2 auto-rows-max ${className}`}
     >
       {children}
     </div>
