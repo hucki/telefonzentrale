@@ -1,13 +1,42 @@
-import type { FaxHistoryItem, HistoryItem } from "~/types/history";
+import type {
+  FaxHistoryItem,
+  HistoryItem,
+  HistoryItemEndpoint,
+} from "~/types/history";
 
 export const getIsIncoming = (direction: string) =>
   direction === "INCOMING" || direction === "MISSED_INCOMING";
+
+export const extensionNames = {
+  g0: "Arnsberg",
+  g1: "Therapie",
+  g2: "Unbekannt",
+  g3: "Neheim",
+};
+
+export const getRoutingTargetName = (endpoints: HistoryItemEndpoint[]) => {
+  if (!endpoints.some((endpoint) => endpoint.type === "ROUTED")) {
+    return "Unbekannt";
+  }
+  return (
+    endpoints
+      .filter((endpoint) => endpoint.type === "ROUTED")
+      .map((endpoint) => {
+        return (
+          extensionNames[
+            endpoint.endpoint.extension as keyof typeof extensionNames
+          ] || "Unbekannt"
+        );
+      })[0] || "Unbekannt"
+  );
+};
+
 export const getTargetName = (target: string) =>
   target.includes("492932")
     ? "Neheim"
     : target.includes("492931")
       ? "Arnsberg"
-      : "Unbekannt";
+      : undefined;
 
 export const getTargetColor = (targetName: string) =>
   targetName === "Neheim"

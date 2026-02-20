@@ -13,6 +13,7 @@ import { useHistoryItemUpdate } from "~/hooks/useHistoryItemUpdate";
 import { Avatar } from "~/components/avatar";
 import {
   getIsIncoming,
+  getRoutingTargetName,
   getTargetColor,
   getTargetName,
   isItemFromToday,
@@ -92,8 +93,7 @@ const FaxContactInfo = ({
   const contactNumber = isIncoming ? item.source : item.target;
   const contactName = isIncoming ? item.sourceAlias : item.targetAlias;
 
-  const targetName = getTargetName(item.target);
-  const targetColor = getTargetColor(targetName);
+  const itemTargetName = getTargetName(item.target);
 
   return (
     <div className="space-y-1">
@@ -232,7 +232,9 @@ export const FaxHistoryItemList = ({
         const faxStatusType = item.faxStatusType as FaxStatusType | undefined;
         const isIncoming = getIsIncoming(item.direction);
         const isToday = isItemFromToday(item);
-        const targetName = getTargetName(item.target);
+        const itemTargetName = getTargetName(item.target);
+        const targetName =
+          itemTargetName || getRoutingTargetName(item.endpoints);
         const targetColor = getTargetColor(targetName);
         const isPending = updatingItemIds.includes(item.id);
         const formattedDate = new Date(item.lastModified).toLocaleString(
@@ -269,9 +271,9 @@ export const FaxHistoryItemList = ({
                   />
                 )}
                 <time
-                  className={`text-sm ${
+                  className={`text-sm px-2 py-0.5 rounded-full ${
                     isToday
-                      ? "font-bold bg-blue-200 text-blue-800 dark:bg-blue-700 dark:text-blue-200"
+                      ? "font-bold bg-blue-200 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                       : "text-gray-600 dark:text-gray-400"
                   }`}
                   dateTime={item.lastModified}

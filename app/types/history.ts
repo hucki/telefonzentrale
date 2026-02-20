@@ -1,5 +1,20 @@
 export type HistoryItemType = "CALL" | "VOICEMAIL" | "SMS" | "FAX";
 
+export type HistoryPanelId =
+  | "missed"
+  | "incoming"
+  | "outgoing"
+  | "voicemail"
+  | "fax-incoming"
+  | "fax-outgoing";
+
+export type HistoryItemEndpoint = {
+  type: string;
+  endpoint: {
+    extension: string;
+    type: string;
+  };
+};
 export type HistoryItem = {
   id: string;
   source: string;
@@ -16,13 +31,7 @@ export type HistoryItem = {
   read: boolean;
   archived: boolean;
   note: string | null;
-  endpoints: {
-    type: string;
-    endpoint: {
-      extension: string;
-      type: string;
-    };
-  }[];
+  endpoints: HistoryItemEndpoint[];
   starred: boolean;
   labels: string[];
   faxStatusType?: string;

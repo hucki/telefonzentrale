@@ -5,6 +5,7 @@ import { ArchiveButton } from "~/components/archiveButton";
 import { Avatar } from "~/components/avatar";
 import {
   getIsIncoming,
+  getRoutingTargetName,
   getTargetColor,
   getTargetName,
   isItemFromToday,
@@ -40,7 +41,8 @@ export const HistoryListItem = ({
 }: HistoryListItemProps) => {
   const isToday = isItemFromToday(item);
   const isIncoming = getIsIncoming(item.direction);
-
+  const itemTargetName = getTargetName(item.target);
+  const targetName = itemTargetName || getRoutingTargetName(item.endpoints);
   const displayDuration = item.duration
     ? getDisplayDuration(item.duration)
     : null;
@@ -114,8 +116,8 @@ export const HistoryListItem = ({
             {isIncoming && (
               <>
                 <Avatar
-                  name={getTargetName(item.target)}
-                  color={getTargetColor(getTargetName(item.target))}
+                  name={targetName}
+                  color={getTargetColor(targetName)}
                   size="sm"
                   className="shrink-0"
                 />
