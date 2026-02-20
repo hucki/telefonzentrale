@@ -1,8 +1,7 @@
 import type { Route } from "./+types/history";
 import { fetchHistoryWrapper } from "../utils/api";
 import { useLoaderData } from "react-router";
-import HistoryItemListContainer from "~/history/HistoryItemListContainer";
-import { sortDescending } from "~/utils/sortItems";
+import { HistoryPageLayout } from "~/pages/HistoryPageLayout";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -38,28 +37,6 @@ export const loader = async () => {
 
 export default function History() {
   const data = useLoaderData<typeof loader>();
-  return (
-    <div className="h-full p-4 bg-gray-50 dark:bg-gray-900">
-      <div className="bg-white grid grid-cols-3 gap-2 dark:bg-gray-800 h-full rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-2 overflow-y-auto">
-        <HistoryItemListContainer
-          items={data.callsMissed.items.sort(sortDescending)}
-          isArchive={false}
-          type="CALL"
-          direction="MISSED_INCOMING"
-        />
-        <HistoryItemListContainer
-          items={data.callsIncoming.items.sort(sortDescending)}
-          isArchive={false}
-          type="CALL"
-          direction="INCOMING"
-        />
-        <HistoryItemListContainer
-          items={data.callsOutgoing.items.sort(sortDescending)}
-          isArchive={false}
-          type="CALL"
-          direction="OUTGOING"
-        />
-      </div>
-    </div>
-  );
+
+  return <HistoryPageLayout isArchive={false} data={data} />;
 }

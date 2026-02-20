@@ -37,6 +37,10 @@ export default function VoicemailsArchive() {
           type="VOICEMAIL"
           direction="INCOMING"
           className="md:row-span-2"
+          defaultOpen={true}
+          panelId="voicemail"
+          onRegisterClose={() => {}}
+          onOpen={() => {}}
         />
       </div>
     </div>
